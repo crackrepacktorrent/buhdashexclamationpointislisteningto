@@ -69,7 +69,9 @@
 	}
 
 	$effect(() => {
+		console.log('Effect running, state.status:', state.status, 'lastStatus:', lastStatus);
 		if (state.status !== lastStatus) {
+			console.log('Status changed from', lastStatus, 'to', state.status);
 			lastStatus = state.status;
 			if (state.status === 'paused') pauseMessage = pick(pauseMessages);
 			if (state.status === 'nothing') nothingMessage = pick(nothingMessages);
