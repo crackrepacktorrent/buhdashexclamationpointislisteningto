@@ -54,7 +54,7 @@
 
 <div bind:this={textEl} class="container">
 	{#if data.status === 'playing'}
-		{data.title} BY {data.artist} FROM {data.album}
+		{data.title.toUpperCase()} BY {data.artist.toUpperCase()} FROM {data.album.toUpperCase()}
 	{:else if data.status === 'paused'}
 		{pauseMessage}
 	{:else if data.status === 'nothing'}
