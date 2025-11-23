@@ -104,11 +104,16 @@
 		// Track all content that affects display
 		const _ = [state.status, state.title, state.artist, state.album, pauseMessage, nothingMessage];
 		// Wait for DOM to render new content, then fit
-		tick().then(() => fit());
+		tick().then(() => {
+			requestAnimationFrame(() => fit());
+		});
 	});
 
 	onMount(() => {
-		fit();
+		// Wait for browser to complete layout before first fit
+		requestAnimationFrame(() => {
+			requestAnimationFrame(() => fit());
+		});
 		const interval = setInterval(fetchState, 10000);
 		window.addEventListener('resize', fit);
 		return () => {
