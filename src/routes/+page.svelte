@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { invalidate } from '$app/navigation';
+	import { invalidateAll } from '$app/navigation';
 	import textFit from 'textfit';
 
 	let { data } = $props();
@@ -43,7 +43,7 @@
 
 	onMount(() => {
 		fit();
-		const interval = setInterval(() => invalidate('/'), 10000);
+		const interval = setInterval(() => invalidateAll(), 10000);
 		window.addEventListener('resize', fit);
 		return () => {
 			clearInterval(interval);
