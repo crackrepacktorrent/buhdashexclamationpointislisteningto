@@ -54,7 +54,7 @@
 
 <div bind:this={textEl} class="container">
 	{#if data.status === 'playing'}
-		{data.title.toUpperCase()} BY {data.artist.toUpperCase()} FROM {data.album.toUpperCase()}
+		<span class="title">{data.title.toUpperCase()}</span> BY <span class="artist">{data.artist.toUpperCase()}</span> FROM <span class="album">{data.album.toUpperCase()}</span>
 	{:else if data.status === 'paused'}
 		{pauseMessage}
 	{:else if data.status === 'nothing'}
@@ -80,5 +80,17 @@
 		text-align: center;
 		font-weight: bold;
 		word-break: break-all;
+	}
+
+	.title {
+		color: #ff6b6b;
+	}
+
+	.artist {
+		color: #4ecdc4;
+	}
+
+	.album {
+		color: #ffe66d;
 	}
 </style>
