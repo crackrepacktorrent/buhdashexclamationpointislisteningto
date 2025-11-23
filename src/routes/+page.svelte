@@ -17,7 +17,7 @@
 		'THEIR OWN THOUGHTS',
 		'DREAMS FOLDING IN ON THEMSELVES',
 		"SOMETHING THAT ISN'T MUSIC",
-		"A LOT OF QUIET STRETCHED OUT OVER A LOT OF TIME"
+		'A LOT OF QUIET STRETCHED OUT OVER A LOT OF TIME'
 	];
 
 	function pick(arr: string[]) {
@@ -54,7 +54,7 @@
 
 <div bind:this={textEl} class="container">
 	{#if data.status === 'playing'}
-		{data.title} - {data.artist}
+		"{data.title} BY {data.artist} FROM {data.album}"
 	{:else if data.status === 'paused'}
 		{pauseMessage}
 	{:else if data.status === 'nothing'}
