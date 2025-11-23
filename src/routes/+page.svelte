@@ -1,6 +1,5 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
-	import textFit from 'textfit';
+	import { onMount, tick } from 'svelte';
 
 	let { data: initialData } = $props();
 	let state = $state({
@@ -10,13 +9,14 @@
 		album: initialData.album
 	});
 	let textEl: HTMLDivElement;
+	let containerEl: HTMLDivElement;
+	let fontSize = $state(100);
 
 	async function fetchState() {
 		try {
 			const res = await fetch('/api/state');
 			if (res.ok) {
 				const newState = await res.json();
-				console.log('Fetched state:', newState);
 				state.status = newState.status;
 				state.title = newState.title;
 				state.artist = newState.artist;
@@ -47,11 +47,11 @@
 
 	function wobble(text: string, color?: string) {
 		return text.split('').map((char) => {
-			if (char === ' ') return { char: '\u00A0', style: '' }; // non-breaking space
-			const rotation = (Math.random() - 0.5) * 20; // -5 to 5 degrees
-			const scaleX = 0.7 + Math.random() * 0.6; // 0.7 to 1.3
-			const scaleY = 0.7 + Math.random() * 0.6; // 0.7 to 1.3
-			const yOffset = (Math.random() - 0.5) * 10; // -5 to 5%
+			if (char === ' ') return { char: '\u00A0', style: '' };
+			const rotation = (Math.random() - 0.5) * 20;
+			const scaleX = 0.7 + Math.random() * 0.6;
+			const scaleY = 0.7 + Math.random() * 0.6;
+			const yOffset = (Math.random() - 0.5) * 10;
 			const colorStyle = color ? `color: ${color};` : '';
 			return {
 				char,
@@ -64,15 +64,35 @@
 	let nothingMessage = $state(pick(nothingMessages));
 	let lastStatus = $state('');
 
-	function fit() {
-		// Temporarily disabled to test
-		// if (textEl) textFit(textEl, { multiLine: true, maxFontSize: 1000 });
+	async function fit() {
+		if (!textEl || !containerEl) return;
+
+		const padding = 32;
+		const maxWidth = containerEl.clientWidth - padding;
+		const maxHeight = containerEl.clientHeight - padding;
+
+		let min = 10;
+		let max = 800;
+
+		// Binary search for optimal font size
+		while (max - min > 1) {
+			const mid = Math.floor((min + max) / 2);
+			fontSize = mid;
+			await tick();
+
+			const fits = textEl.scrollWidth <= maxWidth && textEl.scrollHeight <= maxHeight;
+			if (fits) {
+				min = mid; // Fits, try larger
+			} else {
+				max = mid; // Too big, try smaller
+			}
+		}
+
+		fontSize = min;
 	}
 
 	$effect(() => {
-		console.log('Effect running, state.status:', state.status, 'lastStatus:', lastStatus);
 		if (state.status !== lastStatus) {
-			console.log('Status changed from', lastStatus, 'to', state.status);
 			lastStatus = state.status;
 			if (state.status === 'paused') pauseMessage = pick(pauseMessages);
 			if (state.status === 'nothing') nothingMessage = pick(nothingMessages);
@@ -91,35 +111,37 @@
 	});
 </script>
 
-<p style="position:fixed;top:0;left:0;background:red;color:white;z-index:9999">DEBUG: {state.status}</p>
-<div bind:this={textEl} class="container">
-	{#if state.status === 'playing'}
-		{#each wobble(state.title.toUpperCase(), '#ff6b6b') as { char, style }}<span {style}
-				>{char}</span
-			>{/each}
-		{#each wobble(' BY ') as { char, style }}<span {style}>{char}</span>{/each}
-		{#each wobble(state.artist.toUpperCase(), '#4ecdc4') as { char, style }}<span {style}
-				>{char}</span
-			>{/each}
-		{#each wobble(' FROM ') as { char, style }}<span {style}>{char}</span>{/each}
-		{#each wobble(state.album.toUpperCase(), '#ffe66d') as { char, style }}<span {style}
-				>{char}</span
-			>{/each}
-	{:else if state.status === 'paused'}
-		{#each wobble(pauseMessage) as { char, style }}<span {style}>{char}</span>{/each}
-	{:else if state.status === 'nothing'}
-		{#each wobble(nothingMessage) as { char, style }}<span {style}>{char}</span>{/each}
-	{:else}
-		...
-	{/if}
+<div bind:this={containerEl} class="viewport">
+	<div bind:this={textEl} class="text-content" style="font-size: {fontSize}px">
+		{#if state.status === 'playing'}
+			{#each wobble(state.title.toUpperCase(), '#ff6b6b') as { char, style }}<span {style}
+					>{char}</span
+				>{/each}
+			{#each wobble(' BY ') as { char, style }}<span {style}>{char}</span>{/each}
+			{#each wobble(state.artist.toUpperCase(), '#4ecdc4') as { char, style }}<span {style}
+					>{char}</span
+				>{/each}
+			{#each wobble(' FROM ') as { char, style }}<span {style}>{char}</span>{/each}
+			{#each wobble(state.album.toUpperCase(), '#ffe66d') as { char, style }}<span {style}
+					>{char}</span
+				>{/each}
+		{:else if state.status === 'paused'}
+			{#each wobble(pauseMessage) as { char, style }}<span {style}>{char}</span>{/each}
+		{:else if state.status === 'nothing'}
+			{#each wobble(nothingMessage) as { char, style }}<span {style}>{char}</span>{/each}
+		{:else}
+			...
+		{/if}
+	</div>
 </div>
 
 <style>
 	:global(body) {
 		margin: 0;
+		overflow: hidden;
 	}
 
-	.container {
+	.viewport {
 		width: 100vw;
 		height: 100vh;
 		display: flex;
@@ -127,8 +149,13 @@
 		justify-content: center;
 		padding: 1rem;
 		box-sizing: border-box;
-		text-align: center;
+	}
+
+	.text-content {
 		font-weight: bold;
+		text-align: center;
 		word-break: break-all;
+		line-height: 1.1;
+		max-width: 100%;
 	}
 </style>
