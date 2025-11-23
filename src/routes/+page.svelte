@@ -1,10 +1,21 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { invalidate } from '$app/navigation';
 	import textFit from 'textfit';
 
-	let { data } = $props();
+	let { data: initialData } = $props();
+	let state = $state(initialData);
 	let textEl: HTMLDivElement;
+
+	async function fetchState() {
+		try {
+			const res = await fetch('/update');
+			if (res.ok) {
+				state = await res.json();
+			}
+		} catch (e) {
+			console.error('Failed to fetch:', e);
+		}
+	}
 
 	const pauseMessages = [
 		'THE SILENCE OF A BRIEF PAUSE FROM THE NOISE',
@@ -27,9 +38,9 @@
 	function wobble(text: string, color?: string) {
 		return text.split('').map((char) => {
 			if (char === ' ') return { char: '\u00A0', style: '' }; // non-breaking space
-			const rotation = (Math.random() - 0.5) * 10; // -5 to 5 degrees
-			const scaleX = 0.85 + Math.random() * 0.3; // 0.85 to 1.15
-			const scaleY = 0.85 + Math.random() * 0.3; // 0.85 to 1.15
+			const rotation = (Math.random() - 0.5) * 20; // -5 to 5 degrees
+			const scaleX = 0.7 + Math.random() * 0.6; // 0.7 to 1.3
+			const scaleY = 0.7 + Math.random() * 0.6; // 0.7 to 1.3
 			const yOffset = (Math.random() - 0.5) * 10; // -5 to 5%
 			const colorStyle = color ? `color: ${color};` : '';
 			return {
@@ -48,17 +59,17 @@
 	}
 
 	$effect(() => {
-		if (data.status !== lastStatus) {
-			lastStatus = data.status;
-			if (data.status === 'paused') pauseMessage = pick(pauseMessages);
-			if (data.status === 'nothing') nothingMessage = pick(nothingMessages);
+		if (state.status !== lastStatus) {
+			lastStatus = state.status;
+			if (state.status === 'paused') pauseMessage = pick(pauseMessages);
+			if (state.status === 'nothing') nothingMessage = pick(nothingMessages);
 		}
 		fit();
 	});
 
 	onMount(() => {
 		fit();
-		const interval = setInterval(() => invalidate('app:state'), 10000);
+		const interval = setInterval(fetchState, 10000);
 		window.addEventListener('resize', fit);
 		return () => {
 			clearInterval(interval);
@@ -68,15 +79,21 @@
 </script>
 
 <div bind:this={textEl} class="container">
-	{#if data.status === 'playing'}
-		{#each wobble(data.title.toUpperCase(), '#ff6b6b') as { char, style }}<span {style}>{char}</span>{/each}
+	{#if state.status === 'playing'}
+		{#each wobble(state.title.toUpperCase(), '#ff6b6b') as { char, style }}<span {style}
+				>{char}</span
+			>{/each}
 		{#each wobble(' BY ') as { char, style }}<span {style}>{char}</span>{/each}
-		{#each wobble(data.artist.toUpperCase(), '#4ecdc4') as { char, style }}<span {style}>{char}</span>{/each}
+		{#each wobble(state.artist.toUpperCase(), '#4ecdc4') as { char, style }}<span {style}
+				>{char}</span
+			>{/each}
 		{#each wobble(' FROM ') as { char, style }}<span {style}>{char}</span>{/each}
-		{#each wobble(data.album.toUpperCase(), '#ffe66d') as { char, style }}<span {style}>{char}</span>{/each}
-	{:else if data.status === 'paused'}
+		{#each wobble(state.album.toUpperCase(), '#ffe66d') as { char, style }}<span {style}
+				>{char}</span
+			>{/each}
+	{:else if state.status === 'paused'}
 		{#each wobble(pauseMessage) as { char, style }}<span {style}>{char}</span>{/each}
-	{:else if data.status === 'nothing'}
+	{:else if state.status === 'nothing'}
 		{#each wobble(nothingMessage) as { char, style }}<span {style}>{char}</span>{/each}
 	{:else}
 		...
@@ -100,5 +117,4 @@
 		font-weight: bold;
 		word-break: break-all;
 	}
-
 </style>

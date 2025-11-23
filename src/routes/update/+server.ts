@@ -1,5 +1,21 @@
 import type { RequestHandler } from './$types';
 
+export const GET: RequestHandler = async ({ platform }) => {
+	if (!platform?.env?.KV) {
+		return Response.json({ status: 'nothing' });
+	}
+
+	const raw = await platform.env.KV.get('current-state');
+
+	if (!raw) {
+		return Response.json({ status: 'nothing' });
+	}
+
+	return Response.json(JSON.parse(raw), {
+		headers: { 'Cache-Control': 'no-store' }
+	});
+};
+
 export const POST: RequestHandler = async ({ request, platform }) => {
 	const authHeader = request.headers.get('Authorization');
 	if (authHeader != `Bearer ${platform?.env.API_SECRET}`) {
