@@ -1,6 +1,8 @@
 import type { PageServerLoad } from './$types';
 
-export const load: PageServerLoad = async ({ platform }) => {
+export const load: PageServerLoad = async ({ platform, depends }) => {
+	depends('app:state');
+
 	if (!platform?.env?.KV) {
 		return { status: 'nothing' };
 	}
