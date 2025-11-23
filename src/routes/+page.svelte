@@ -3,12 +3,12 @@
 	import textFit from 'textfit';
 
 	let { data: initialData } = $props();
-	let state = $state(initialData);
+	let state = $state.raw(initialData);
 	let textEl: HTMLDivElement;
 
 	async function fetchState() {
 		try {
-			const res = await fetch('/update');
+			const res = await fetch('/api/state');
 			if (res.ok) {
 				const newState = await res.json();
 				console.log('Fetched state:', newState);
