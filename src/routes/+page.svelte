@@ -90,6 +90,7 @@
 	});
 </script>
 
+<p style="position:fixed;top:0;left:0;background:red;color:white;z-index:9999">DEBUG: {state.status}</p>
 <div bind:this={textEl} class="container">
 	{#if state.status === 'playing'}
 		{#each wobble(state.title.toUpperCase(), '#ff6b6b') as { char, style }}<span {style}
