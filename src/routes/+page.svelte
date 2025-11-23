@@ -65,7 +65,8 @@
 	let lastStatus = $state('');
 
 	function fit() {
-		if (textEl) textFit(textEl, { multiLine: true, maxFontSize: 1000 });
+		// Temporarily disabled to test
+		// if (textEl) textFit(textEl, { multiLine: true, maxFontSize: 1000 });
 	}
 
 	$effect(() => {
