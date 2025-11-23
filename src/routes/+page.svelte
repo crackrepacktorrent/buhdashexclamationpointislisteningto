@@ -54,7 +54,7 @@
 
 <div bind:this={textEl} class="container">
 	{#if data.status === 'playing'}
-		"{data.title} BY {data.artist} FROM {data.album}"
+		{data.title} BY {data.artist} FROM {data.album}
 	{:else if data.status === 'paused'}
 		{pauseMessage}
 	{:else if data.status === 'nothing'}
