@@ -10,7 +10,9 @@
 		try {
 			const res = await fetch('/update');
 			if (res.ok) {
-				state = await res.json();
+				const newState = await res.json();
+				console.log('Fetched state:', newState);
+				state = newState;
 			}
 		} catch (e) {
 			console.error('Failed to fetch:', e);
