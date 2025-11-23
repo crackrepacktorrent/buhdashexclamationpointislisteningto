@@ -7,6 +7,10 @@ settings:
 importers:
 
   .:
+    dependencies:
+      textfit:
+        specifier: ^2.4.0
+        version: 2.4.0
     devDependencies:
       '@eslint/compat':
         specifier: ^1.4.0
@@ -1455,6 +1459,9 @@ packages:
     resolution: {integrity: sha512-pHeUrp1A5S6RGaXhJB7PtYjL1VVjbVrJ2EfuAoPu9/1LeoMaJa/pcdCsCSb0gS4eUHAHnhCbUDxORZyvGK6kOQ==}
     engines: {node: '>=18'}
 
+  textfit@2.4.0:
+    resolution: {integrity: sha512-/x4aoY5+/tJmu+iwpBH1yw75TFp86M6X15SvaaY/Eep7YySQYtqdOifEtfvVyMwzl7SZ+G4RQw00FD9g5R6i1Q==}
+
   tinyglobby@0.2.15:
     resolution: {integrity: sha512-j2Zq4NyQYG5XMST4cbs02Ak8iJUdxRM0XI5QyxXuZOzKOINmWurp3smXu3y5wDcJrptwpSjgXHzIQxR0omXljQ==}
     engines: {node: '>=12.0.0'}
@@ -2860,6 +2867,8 @@ snapshots:
       locate-character: 3.0.0
       magic-string: 0.30.21
       zimmerframe: 1.1.4
+
+  textfit@2.4.0: {}
 
   tinyglobby@0.2.15:
     dependencies:
