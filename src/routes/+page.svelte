@@ -97,7 +97,14 @@
 			if (state.status === 'paused') pauseMessage = pick(pauseMessages);
 			if (state.status === 'nothing') nothingMessage = pick(nothingMessages);
 		}
-		fit();
+	});
+
+	// Separate effect to refit whenever displayed content changes
+	$effect(() => {
+		// Track all content that affects display
+		const _ = [state.status, state.title, state.artist, state.album, pauseMessage, nothingMessage];
+		// Wait for DOM to render new content, then fit
+		tick().then(() => fit());
 	});
 
 	onMount(() => {
