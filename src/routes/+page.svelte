@@ -3,7 +3,12 @@
 	import textFit from 'textfit';
 
 	let { data: initialData } = $props();
-	let state = $state.raw(initialData);
+	let state = $state({
+		status: initialData.status,
+		title: initialData.title,
+		artist: initialData.artist,
+		album: initialData.album
+	});
 	let textEl: HTMLDivElement;
 
 	async function fetchState() {
@@ -12,7 +17,10 @@
 			if (res.ok) {
 				const newState = await res.json();
 				console.log('Fetched state:', newState);
-				state = newState;
+				state.status = newState.status;
+				state.title = newState.title;
+				state.artist = newState.artist;
+				state.album = newState.album;
 			}
 		} catch (e) {
 			console.error('Failed to fetch:', e);
