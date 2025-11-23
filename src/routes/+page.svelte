@@ -11,6 +11,7 @@
 	let textEl: HTMLDivElement;
 	let containerEl: HTMLDivElement;
 	let fontSize = $state(100);
+	let ready = $state(false);
 
 	async function fetchState() {
 		try {
@@ -67,6 +68,7 @@
 	async function fit() {
 		if (!textEl || !containerEl) return;
 
+		ready = false; // Hide during fitting
 		const padding = 32;
 		const maxWidth = containerEl.clientWidth - padding;
 		const maxHeight = containerEl.clientHeight - padding;
@@ -89,6 +91,7 @@
 		}
 
 		fontSize = min;
+		ready = true;
 	}
 
 	$effect(() => {
@@ -124,7 +127,7 @@
 </script>
 
 <div bind:this={containerEl} class="viewport">
-	<div bind:this={textEl} class="text-content" style="font-size: {fontSize}px">
+	<div bind:this={textEl} class="text-content" style="font-size: {fontSize}px; opacity: {ready ? 1 : 0}">
 		{#if state.status === 'playing'}
 			{#each wobble(state.title.toUpperCase(), '#ff6b6b') as { char, style }}<span {style}
 					>{char}</span
