@@ -119,9 +119,19 @@
 		});
 		const interval = setInterval(fetchState, 10000);
 		window.addEventListener('resize', fit);
+
+		// Fetch immediately when tab becomes visible (fixes background throttling)
+		const handleVisibilityChange = () => {
+			if (document.visibilityState === 'visible') {
+				fetchState();
+			}
+		};
+		document.addEventListener('visibilitychange', handleVisibilityChange);
+
 		return () => {
 			clearInterval(interval);
 			window.removeEventListener('resize', fit);
+			document.removeEventListener('visibilitychange', handleVisibilityChange);
 		};
 	});
 </script>
