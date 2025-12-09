@@ -152,6 +152,18 @@
 							>{char}</span
 						>{/each}
 				{/if}
+			{:else if state.album && /^channel\s+\d+$/i.test(state.album)}
+				{#each wobble((state.title || 'UNKNOWN TITLE').toUpperCase(), '#ff6b6b') as { char, style }}<span {style}
+						>{char}</span
+					>{/each}
+				{#each wobble(' BY ') as { char, style }}<span {style}>{char}</span>{/each}
+				{#each wobble((state.artist || 'UNKNOWN ARTIST').toUpperCase(), '#4ecdc4') as { char, style }}<span {style}
+						>{char}</span
+					>{/each}
+				{#each wobble(' ON ') as { char, style }}<span {style}>{char}</span>{/each}
+				{#each wobble('NTS RADIO ' + state.album.replace(/^channel\s+/i, 'CHANNEL ').toUpperCase(), '#ffe66d') as { char, style }}<span {style}
+						>{char}</span
+					>{/each}
 			{:else}
 				{#each wobble((state.title || 'UNKNOWN TITLE').toUpperCase(), '#ff6b6b') as { char, style }}<span {style}
 						>{char}</span
