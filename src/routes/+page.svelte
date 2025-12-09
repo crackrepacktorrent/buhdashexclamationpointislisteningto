@@ -139,18 +139,33 @@
 <div bind:this={containerEl} class="viewport">
 	<div bind:this={textEl} class="text-content" style="font-size: {fontSize}px; opacity: {ready ? 1 : 0}">
 		{#if state.status === 'playing'}
-			{#each wobble((state.title || 'UNKNOWN TITLE').toUpperCase(), '#ff6b6b') as { char, style }}<span {style}
-					>{char}</span
-				>{/each}
-			{#each wobble(' BY ') as { char, style }}<span {style}>{char}</span>{/each}
-			{#each wobble((state.artist || 'UNKNOWN ARTIST').toUpperCase(), '#4ecdc4') as { char, style }}<span {style}
-					>{char}</span
-				>{/each}
-			{#if state.album}
-				{#each wobble(' FROM ') as { char, style }}<span {style}>{char}</span>{/each}
-				{#each wobble(state.album.toUpperCase(), '#ffe66d') as { char, style }}<span {style}
+			{#if state.title === 'NTS Radio'}
+				{#each wobble((state.artist || 'UNKNOWN ARTIST').toUpperCase(), '#4ecdc4') as { char, style }}<span {style}
 						>{char}</span
 					>{/each}
+				{#each wobble(' ON ') as { char, style }}<span {style}>{char}</span>{/each}
+				{#each wobble('NTS RADIO', '#ff6b6b') as { char, style }}<span {style}
+						>{char}</span
+					>{/each}
+				{#if state.album}
+					{#each wobble(' ' + state.album.toUpperCase(), '#ffe66d') as { char, style }}<span {style}
+							>{char}</span
+						>{/each}
+				{/if}
+			{:else}
+				{#each wobble((state.title || 'UNKNOWN TITLE').toUpperCase(), '#ff6b6b') as { char, style }}<span {style}
+						>{char}</span
+					>{/each}
+				{#each wobble(' BY ') as { char, style }}<span {style}>{char}</span>{/each}
+				{#each wobble((state.artist || 'UNKNOWN ARTIST').toUpperCase(), '#4ecdc4') as { char, style }}<span {style}
+						>{char}</span
+					>{/each}
+				{#if state.album}
+					{#each wobble(' FROM ') as { char, style }}<span {style}>{char}</span>{/each}
+					{#each wobble(state.album.toUpperCase(), '#ffe66d') as { char, style }}<span {style}
+							>{char}</span
+						>{/each}
+				{/if}
 			{/if}
 		{:else if state.status === 'paused'}
 			{#each wobble(pauseMessage) as { char, style }}<span {style}>{char}</span>{/each}
